@@ -1,228 +1,300 @@
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
 
-export default function Globe() {
+export default function Intro() {
   const ref = useRef<HTMLDivElement>(null);
-  const initialized = useRef(false);
 
   useEffect(() => {
-    if (!ref.current || initialized.current) return;
-    initialized.current = true;
+    if (!ref.current) return;
 
-    const width = 520;
-    const height = 520;
+    const container = ref.current;
+    container.innerHTML = "";
 
-    // ==============================
-    // 🌌 SCENE (NO BACKGROUND)
-    // ==============================
-    const scene = new THREE.Scene();
+    const whoosh = new Audio("/sounds/whooshsoft.mp3");
+    whoosh.volume = 0.25;
 
-    // ==============================
-    // 📷 CAMERA
-    // ==============================
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 6;
+    const hit = new Audio("/sounds/whooshsoft.mp3");
+    hit.volume = 0.2;
 
-    // ==============================
-    // 🎥 RENDERER
-    // ==============================
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-      powerPreference: "high-performance",
+    // ============================================
+    // BASE STYLES
+    // ============================================
+    container.style.background = "#000";
+    container.style.width = "100vw";
+    container.style.height = "100vh";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.alignItems = "center";
+    container.style.justifyContent = "center";
+    container.style.overflow = "hidden";
+    container.style.position = "relative";
+    container.style.filter = "blur(10px)";
+    container.style.animation = "focusIn 2.5s ease forwards";
+
+    // ============================================
+    // STYLE BLOCK
+    // ============================================
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500&display=swap');
+
+      * {
+        box-sizing: border-box;
+      }
+
+      @keyframes focusIn {
+        0% {
+          filter: blur(18px);
+          opacity: 0;
+          transform: scale(1.08);
+        }
+        100% {
+          filter: blur(0px);
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes zoom {
+        from { transform: scale(1.08); }
+        to { transform: scale(1); }
+      }
+
+      @keyframes float {
+        from { transform: translateY(100vh); }
+        to { transform: translateY(-10vh); }
+      }
+
+      @keyframes shine {
+        0% { left: -80%; }
+        100% { left: 180%; }
+      }
+
+      @keyframes drift {
+        from { transform: translateY(-25px); }
+        to { transform: translateY(25px); }
+      }
+
+      .bgZoom {
+        animation: zoom 10s ease-out forwards;
+      }
+
+      .title {
+        z-index: 5;
+        margin-bottom: 40px;
+      }
+
+      .letter {
+        font-family: 'Montserrat', sans-serif;
+        font-size: clamp(90px, 12vw, 180px);
+        font-weight: 800;
+        color: white;
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+        letter-spacing: 0.12em;
+        position: relative;
+        text-shadow:
+          0 0 20px rgba(255,255,255,0.15),
+          0 0 60px rgba(255,255,255,0.08);
+      }
+
+      .letter.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .letter::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -80%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255,255,255,0.35),
+          transparent
+        );
+        transform: skewX(-20deg);
+      }
+
+      .letter.show::after {
+        animation: shine 2.2s ease forwards;
+      }
+
+      .line {
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(24px, 2vw, 34px);
+        font-weight: 300;
+        color: rgba(255,255,255,0.8);
+        text-align: center;
+        letter-spacing: 0.04em;
+        max-width: 900px;
+        padding: 0 20px;
+        z-index: 5;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 1s ease;
+        min-height: 50px;
+      }
+
+      .line.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .noise {
+        position: absolute;
+        inset: 0;
+        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        opacity: 0.06;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: rgba(255,255,255,0.45);
+        border-radius: 50%;
+        animation: float linear infinite;
+        z-index: 1;
+      }
+
+      .glow {
+        position: absolute;
+        width: 700px;
+        height: 260px;
+        background: radial-gradient(
+          circle,
+          rgba(255,255,255,0.10) 0%,
+          rgba(255,255,255,0.04) 35%,
+          transparent 70%
+        );
+        filter: blur(60px);
+        animation: drift 7s ease-in-out infinite alternate;
+        z-index: 3;
+      }
+
+      .fade-out {
+        opacity: 0;
+        transition: opacity 1.2s ease;
+      }
+    `;
+    document.head.appendChild(style);
+
+    container.classList.add("bgZoom");
+
+    // ============================================
+    // NOISE
+    // ============================================
+    const noise = document.createElement("div");
+    noise.className = "noise";
+    container.appendChild(noise);
+
+    // ============================================
+    // PARTICLES
+    // ============================================
+    for (let i = 0; i < 45; i++) {
+      const particle = document.createElement("div");
+      particle.className = "particle";
+      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.top = `${Math.random() * 100}vh`;
+      particle.style.animationDuration = `${6 + Math.random() * 8}s`;
+      particle.style.animationDelay = `${Math.random() * 5}s`;
+      container.appendChild(particle);
+    }
+
+    // ============================================
+    // GLOW
+    // ============================================
+    const glow = document.createElement("div");
+    glow.className = "glow";
+    container.appendChild(glow);
+
+    // ============================================
+    // TITLE
+    // ============================================
+    const title = document.createElement("div");
+    title.className = "title";
+
+    const name = "OMNOVAX";
+
+    name.split("").forEach((char, i) => {
+      const span = document.createElement("span");
+      span.className = "letter";
+      span.textContent = char;
+      title.appendChild(span);
+
+      setTimeout(() => {
+        span.classList.add("show");
+
+        // 🔊 SOUND ADDED HERE (whoosh per letter)
+        whoosh.currentTime = 0;
+        whoosh.play().catch(() => {});
+      }, i * 180);
     });
 
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(title);
 
-    ref.current.innerHTML = "";
-    ref.current.appendChild(renderer.domElement);
+    // ============================================
+    // TAGLINES
+    // ============================================
+    const line = document.createElement("div");
+    line.className = "line";
+    container.appendChild(line);
 
-    // ==============================
-    // 🌍 WIREFRAME EARTH (CLEAN VECTOR)
-    // ==============================
-    const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1.25, 64, 64),
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.35,
-      })
-    );
+    const messages = [
+      "From Ideas to Impactful Experiences",
+      "Design. Technology. Emotion.",
+      "Building Digital Products That Matter",
+    ];
 
-    scene.add(globe);
+    let current = 0;
 
-    // ==============================
-    // 🔵 GLOW ATMOSPHERE
-    // ==============================
-    const glow = new THREE.Mesh(
-      new THREE.SphereGeometry(1.38, 64, 64),
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.08,
-        side: THREE.BackSide,
-      })
-    );
+    const showMessage = () => {
+      line.classList.remove("show");
 
-    scene.add(glow);
+      setTimeout(() => {
+        line.textContent = messages[current];
+        line.classList.add("show");
 
-    // ==============================
-    // 🌌 STARFIELD (SUBTLE)
-    // ==============================
-    const starsGeometry = new THREE.BufferGeometry();
-    const starCount = 250;
+        // 🔊 SOUND ADDED HERE (text switch hit)
+        hit.currentTime = 0;
+        hit.play().catch(() => {});
 
-    const starPositions = [];
+        current++;
 
-    for (let i = 0; i < starCount; i++) {
-      starPositions.push(
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20
-      );
-    }
-
-    starsGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(starPositions, 3)
-    );
-
-    const stars = new THREE.Points(
-      starsGeometry,
-      new THREE.PointsMaterial({
-        color: 0xffffff,
-        size: 0.015,
-      })
-    );
-
-    scene.add(stars);
-
-    // ==============================
-    // 📡 FEW CLEAN NODES (12 MAX)
-    // ==============================
-    const nodes: THREE.Mesh[] = [];
-
-    for (let i = 0; i < 12; i++) {
-      const node = new THREE.Mesh(
-        new THREE.SphereGeometry(0.02, 10, 10),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
-      );
-
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.random() * Math.PI * 0.9;
-      const r = 1.28;
-
-      node.position.set(
-        r * Math.sin(phi) * Math.cos(theta),
-        r * Math.cos(phi),
-        r * Math.sin(phi) * Math.sin(theta)
-      );
-
-      scene.add(node);
-      nodes.push(node);
-    }
-
-    // ==============================
-    // ✈️ MINIMAL FLIGHT PATHS (4 ONLY)
-    // ==============================
-    const curveMaterial = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.18,
-    });
-
-    for (let i = 0; i < 4; i++) {
-      const start = nodes[Math.floor(Math.random() * nodes.length)];
-      const end = nodes[Math.floor(Math.random() * nodes.length)];
-
-      const mid = new THREE.Vector3(
-        (start.position.x + end.position.x) / 2,
-        (start.position.y + end.position.y) / 2 + 0.4,
-        (start.position.z + end.position.z) / 2
-      );
-
-      const curve = new THREE.QuadraticBezierCurve3(
-        start.position,
-        mid,
-        end.position
-      );
-
-      const points = curve.getPoints(35);
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-      const line = new THREE.Line(geometry, curveMaterial);
-      scene.add(line);
-    }
-
-    // ==============================
-    // 💡 LIGHTS
-    // ==============================
-    scene.add(new THREE.AmbientLight(0xffffff, 1.4));
-
-    const light = new THREE.DirectionalLight(0xffffff, 1.2);
-    light.position.set(5, 3, 5);
-    scene.add(light);
-
-    // ==============================
-    // 🖱️ MOUSE INTERACTION
-    // ==============================
-    let mouseX = 0;
-
-    const handleMouse = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        if (current < messages.length) {
+          setTimeout(showMessage, 2400);
+        }
+      }, 500);
     };
 
-    window.addEventListener("mousemove", handleMouse);
+    setTimeout(showMessage, 2200);
 
-    // ==============================
-    // 🎬 ANIMATION LOOP
-    // ==============================
-    let frameId: number;
+    // ============================================
+    // AUTO REDIRECT
+    // ============================================
+    const exitTimer = setTimeout(() => {
+      container.classList.add("fade-out");
 
-    const animate = () => {
-      camera.position.z += (3.2 - camera.position.z) * 0.02;
+      setTimeout(() => {
+        window.location.href = "/home";
+      }, 1200);
+    }, 9000);
 
-      const speed = 0.0012 + mouseX * 0.002;
-
-      globe.rotation.y += speed;
-      glow.rotation.y += speed * 0.8;
-      stars.rotation.y += 0.0002;
-
-      const pulse = 1 + Math.sin(Date.now() * 0.001) * 0.03;
-      glow.scale.set(pulse, pulse, pulse);
-
-      renderer.render(scene, camera);
-      frameId = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    // ==============================
-    // 🧹 CLEANUP
-    // ==============================
+    // ============================================
+    // CLEANUP
+    // ============================================
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener("mousemove", handleMouse);
-
-      renderer.dispose();
-      if (ref.current) ref.current.innerHTML = "";
-
-      initialized.current = false;
+      clearTimeout(exitTimer);
+      document.head.removeChild(style);
     };
   }, []);
 
-  return (
-    <div
-      style={{
-        width: "520px",
-        height: "520px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      ref={ref}
-    />
-  );
+  return <div ref={ref} />;
 }
