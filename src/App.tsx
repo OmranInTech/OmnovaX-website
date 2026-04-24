@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Loader from "./components/Loader";
 import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,9 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
+          {/* NAVBAR ADDED HERE */}
+          <Navbar />
+
           <Home />
         </motion.div>
       )}

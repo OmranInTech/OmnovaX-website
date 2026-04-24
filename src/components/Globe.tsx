@@ -9,12 +9,6 @@ export default function Intro() {
     const container = ref.current;
     container.innerHTML = "";
 
-    const whoosh = new Audio("/sounds/whooshsoft.mp3");
-    whoosh.volume = 0.25;
-
-    const hit = new Audio("/sounds/whooshsoft.mp3");
-    hit.volume = 0.2;
-
     // ============================================
     // BASE STYLES
     // ============================================
@@ -37,21 +31,11 @@ export default function Intro() {
     style.innerHTML = `
       @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500&display=swap');
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
 
       @keyframes focusIn {
-        0% {
-          filter: blur(18px);
-          opacity: 0;
-          transform: scale(1.08);
-        }
-        100% {
-          filter: blur(0px);
-          opacity: 1;
-          transform: scale(1);
-        }
+        0% { filter: blur(18px); opacity: 0; transform: scale(1.08); }
+        100% { filter: blur(0px); opacity: 1; transform: scale(1); }
       }
 
       @keyframes zoom {
@@ -74,14 +58,9 @@ export default function Intro() {
         to { transform: translateY(25px); }
       }
 
-      .bgZoom {
-        animation: zoom 10s ease-out forwards;
-      }
+      .bgZoom { animation: zoom 10s ease-out forwards; }
 
-      .title {
-        z-index: 5;
-        margin-bottom: 40px;
-      }
+      .title { z-index: 5; margin-bottom: 40px; }
 
       .letter {
         font-family: 'Montserrat', sans-serif;
@@ -231,10 +210,6 @@ export default function Intro() {
 
       setTimeout(() => {
         span.classList.add("show");
-
-        // 🔊 SOUND ADDED HERE (whoosh per letter)
-        whoosh.currentTime = 0;
-        whoosh.play().catch(() => {});
       }, i * 180);
     });
 
@@ -261,10 +236,6 @@ export default function Intro() {
       setTimeout(() => {
         line.textContent = messages[current];
         line.classList.add("show");
-
-        // 🔊 SOUND ADDED HERE (text switch hit)
-        hit.currentTime = 0;
-        hit.play().catch(() => {});
 
         current++;
 
