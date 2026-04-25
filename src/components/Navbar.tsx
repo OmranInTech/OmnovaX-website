@@ -34,10 +34,7 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{
-          duration: 0.8,
-          ease: [0.22, 1, 0.36, 1],
-        }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
       >
         <div
@@ -69,7 +66,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-2">
-            {links.map((link, index) => (
+            {links.map((link) => (
               <motion.a
                 key={link.name}
                 href="#"
@@ -146,15 +143,10 @@ export default function Navbar() {
           >
             <div className="rounded-[32px] border border-white bg-white/90 backdrop-blur-3xl p-8 shadow-2xl">
               <div className="space-y-2">
-                {links.map((link, index) => (
+                {links.map((link) => (
                   <motion.a
                     key={link.name}
                     href="#"
-                    initial={{ opacity: 0, x: -25 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: index * 0.08,
-                    }}
                     className={`flex items-center justify-between rounded-2xl px-5 py-4 transition-all duration-300 ${
                       link.active
                         ? "bg-lime-100 text-black"

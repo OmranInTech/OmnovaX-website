@@ -2,8 +2,6 @@ import Navbar from "../components/Navbar";
 import {
   motion,
   AnimatePresence,
-  useMotionValue,
-  useTransform,
 } from "framer-motion";
 import {
   Rocket,
@@ -11,7 +9,6 @@ import {
   Brain,
   ShieldCheck,
   Sparkles,
-  Cpu,
 } from "lucide-react";
 import { useState } from "react";
 
