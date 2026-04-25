@@ -1,68 +1,188 @@
-import { useState } from "react";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Menu,
+  X,
+  ArrowRight,
+  Sparkles,
+  ChevronDown,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const links = [
-    "Home",
-    "About",
-    "Services",
-    "Blogs",
-    "Careers",
-    "Contact",
+    { name: "Home", active: true },
+    { name: "Technology" },
+    { name: "Services" },
+    { name: "Portfolio" },
+    { name: "Blogs" },
   ];
 
   return (
-    <nav className="fixed top-6 left-0 w-full flex justify-center z-50">
-      
-      {/* Glass Container */}
-      <div className="backdrop-blur-2xl bg-white/70 border border-black/10 shadow-xl px-6 py-3 rounded-full flex items-center justify-between w-[92%] max-w-6xl">
-
-        {/* Logo */}
-        <div className="font-bold text-black tracking-wide text-lg">
-          Omnova<span className="text-gray-500">X</span>
-        </div>
-
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm text-black/70 font-medium tracking-wide">
-          {links.map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="hover:text-black transition duration-300 relative group"
+    <>
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{
+          duration: 0.8,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
+      >
+        <div
+          className={`relative flex items-center justify-between w-full max-w-7xl rounded-full transition-all duration-500 ${
+            scrolled
+              ? "bg-white/85 backdrop-blur-3xl border border-white shadow-2xl px-8 py-4"
+              : "bg-white/70 backdrop-blur-2xl border border-white/80 shadow-xl px-8 py-4"
+          }`}
+        >
+          {/* Logo */}
+          <a href="/" className="flex items-center gap-3 group">
+            <motion.div
+              whileHover={{ rotate: 180 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center justify-center w-11 h-11 rounded-2xl bg-black text-white shadow-lg"
             >
-              {item}
-              <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-black group-hover:w-full transition-all duration-300"></span>
-            </a>
-          ))}
-        </div>
+              <Sparkles size={20} />
+            </motion.div>
 
-        {/* CTA Button */}
-        <button className="hidden md:flex items-center gap-2 bg-black text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-black/80 transition">
-          Let’s Talk <ArrowRight size={16} />
-        </button>
+            <div className="leading-tight">
+              <h1 className="text-xl font-bold tracking-tight">
+                Omnova<span className="text-neutral-400">X</span>
+              </h1>
+              <p className="text-[11px] text-neutral-500 uppercase tracking-[0.25em]">
+                AI Studio
+              </p>
+            </div>
+          </a>
 
-        {/* Mobile menu */}
-        <button onClick={() => setOpen(!open)} className="md:hidden">
-          {open ? <X /> : <Menu />}
-        </button>
-      </div>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-2">
+            {links.map((link, index) => (
+              <motion.a
+                key={link.name}
+                href="#"
+                whileHover={{ y: -2 }}
+                className={`relative px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
+                  link.active
+                    ? "text-black bg-lime-100"
+                    : "text-neutral-600 hover:text-black hover:bg-black/5"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  {link.name}
+                  {(link.name === "Technology" ||
+                    link.name === "Services") && (
+                    <ChevronDown size={15} className="opacity-60" />
+                  )}
+                </span>
 
-      {/* Mobile Dropdown */}
-      {open && (
-        <div className="absolute top-20 w-[92%] max-w-6xl bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl flex flex-col gap-4 text-black">
-          {links.map((item) => (
-            <a key={item} href="#" className="py-2 border-b border-black/10">
-              {item}
-            </a>
-          ))}
+                {link.active && (
+                  <motion.div
+                    layoutId="navbar-active-pill"
+                    className="absolute inset-0 rounded-full bg-lime-100 -z-10"
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 30,
+                    }}
+                  />
+                )}
+              </motion.a>
+            ))}
+          </div>
 
-          <button className="mt-2 bg-black text-white py-3 rounded-xl flex items-center justify-center gap-2">
-            Let’s Talk <ArrowRight size={16} />
+          {/* CTA */}
+          <div className="hidden lg:flex items-center gap-4">
+            <button className="group flex items-center gap-3 rounded-full bg-black px-6 py-3 text-sm font-medium text-white shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-black/30">
+              Contact Us
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="lg:hidden flex items-center justify-center w-12 h-12 rounded-full bg-black text-white"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={open ? "close" : "menu"}
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {open ? <X size={22} /> : <Menu size={22} />}
+              </motion.div>
+            </AnimatePresence>
           </button>
         </div>
-      )}
-    </nav>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -25 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -25 }}
+            transition={{ duration: 0.35 }}
+            className="fixed top-28 left-4 right-4 z-40 lg:hidden"
+          >
+            <div className="rounded-[32px] border border-white bg-white/90 backdrop-blur-3xl p-8 shadow-2xl">
+              <div className="space-y-2">
+                {links.map((link, index) => (
+                  <motion.a
+                    key={link.name}
+                    href="#"
+                    initial={{ opacity: 0, x: -25 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: index * 0.08,
+                    }}
+                    className={`flex items-center justify-between rounded-2xl px-5 py-4 transition-all duration-300 ${
+                      link.active
+                        ? "bg-lime-100 text-black"
+                        : "text-neutral-700 hover:bg-neutral-100"
+                    }`}
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="font-medium">{link.name}</span>
+
+                    {(link.name === "Technology" ||
+                      link.name === "Services") && (
+                      <ChevronDown size={18} />
+                    )}
+                  </motion.a>
+                ))}
+              </div>
+
+              <button className="group mt-8 flex w-full items-center justify-center gap-3 rounded-2xl bg-black py-5 text-white shadow-xl transition-all duration-500 hover:shadow-black/30">
+                Contact Us
+                <ArrowRight
+                  size={18}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
