@@ -8,22 +8,24 @@ import {
 } from "lucide-react";
 
 export default function About() {
-  const ref = useRef(null);
+  const ref = useRef<HTMLElement | null>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   // ================= PREMIUM COUNTER =================
-  const useCounter = (end, trigger) => {
-    const [value, setValue] = useState(0);
+  // FIX: Parameter types specified
+  const useCounter = (end: number, trigger: boolean) => {
+    const [value, setValue] = useState<number>(0);
 
     useEffect(() => {
       if (!trigger) return;
 
-      let startTime = performance.now();
-      const duration = 1400;
+      let startTime: number = performance.now();
+      const duration: number = 1400;
 
-      const animate = (now) => {
-        const progress = Math.min((now - startTime) / duration, 1);
-        const easeOut = 1 - Math.pow(1 - progress, 3);
+      // FIX: now parameter typed
+      const animate = (now: number) => {
+        const progress: number = Math.min((now - startTime) / duration, 1);
+        const easeOut: number = 1 - Math.pow(1 - progress, 3);
 
         setValue(Math.floor(easeOut * end));
 
@@ -49,7 +51,8 @@ export default function About() {
     show: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+      // FIX: ease property now uses a supported Framer Motion string ("easeOut")
+      transition: { duration: 0.8, ease: "easeOut" },
     },
   };
 
@@ -66,7 +69,8 @@ export default function About() {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+      // FIX: ease property updated here as well
+      transition: { duration: 0.7, ease: "easeOut" },
     },
   };
 
@@ -126,8 +130,8 @@ export default function About() {
           </p>
 
           <p className="mt-5 text-lg text-neutral-700 leading-relaxed">
-            Our focus is designing and engineering scalable software products, enterprise platforms,
-            and long-term digital infrastructure that companies can depend on.
+            Our focus is designing and engineering scalable software products,
+            enterprise platforms, and long-term digital infrastructure that companies can depend on.
           </p>
 
           <p className="mt-4 text-base text-neutral-700 leading-relaxed">
