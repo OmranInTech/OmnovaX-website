@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Loader from "./components/Loader";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
-import About from "./pages/About";
-
+import About from "./pages/About"; 
+import Services from "./pages/Services";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -25,16 +25,19 @@ function App() {
         </motion.div>
       ) : (
         <motion.div
-          key="home"
+          key="app"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          {/* NAVBAR ADDED HERE */}
           <Navbar />
 
           <Home />
+
+          {/* 🔥 SINGLE CONTROLLED ABOUT SECTION */}
           <About />
+
+          <Services />
         </motion.div>
       )}
     </AnimatePresence>
